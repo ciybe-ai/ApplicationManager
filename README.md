@@ -174,7 +174,7 @@ git init
 git add .
 git commit -m "Initial commit"
 git branch -M main
-git remote add origin https://github.com/YOUR-ORG/ApplicationManager.git
+git remote add origin https://github.com/ciybe-ai/ApplicationManager.git
 git push -u origin main
 ```
 
@@ -185,7 +185,7 @@ Update-Mechanismus verkompliziert; für ein internes IT-Tool ist ein
 öffentliches Repo meist unproblematisch, notfalls mit unauffälligem Namen.
 
 **Platzhalter ersetzen:** In `src/SystemAgent/appsettings.json`,
-`src/UserAgent/appsettings.json` und überall sonst `YOUR-ORG` durch euren
+`src/UserAgent/appsettings.json` und überall sonst `ciybe-ai` durch euren
 echten GitHub-Org-/User-Namen ersetzen, bevor ihr committet.
 
 ### 6.2 Blacklist/Wishlist pflegen (laufender Betrieb, unabhängig von Releases)
@@ -221,7 +221,7 @@ Die Pipeline (läuft auf `windows-latest`):
 4. Veröffentlicht ein GitHub Release mit allen Assets: beide EXEs, beide
    appsettings-Dateien, `update-manifest.json`, `Install.ps1`, `Uninstall.ps1`
 
-Ergebnis: `https://github.com/YOUR-ORG/ApplicationManager/releases/latest`
+Ergebnis: `https://github.com/ciybe-ai/ApplicationManager/releases/latest`
 enthält immer den aktuellen Stand, ohne dass Konfiguration/Links angepasst
 werden müssen.
 
@@ -230,8 +230,8 @@ werden müssen.
 Als Administrator in PowerShell:
 
 ```powershell
-irm https://github.com/YOUR-ORG/ApplicationManager/releases/latest/download/Install.ps1 -OutFile Install.ps1
-.\Install.ps1 -Repo "YOUR-ORG/ApplicationManager"
+irm https://github.com/ciybe-ai/ApplicationManager/releases/latest/download/Install.ps1 -OutFile Install.ps1
+.\Install.ps1 -Repo "ciybe-ai/ApplicationManager"
 ```
 
 Das Skript (`scripts/Install.ps1`):
@@ -250,7 +250,7 @@ GPO-Computerstartskript, das denselben Ablauf für jeden PC automatisiert.
 
 Deinstallieren:
 ```powershell
-irm https://github.com/YOUR-ORG/ApplicationManager/releases/latest/download/Uninstall.ps1 -OutFile Uninstall.ps1
+irm https://github.com/ciybe-ai/ApplicationManager/releases/latest/download/Uninstall.ps1 -OutFile Uninstall.ps1
 .\Uninstall.ps1
 ```
 
