@@ -101,6 +101,12 @@ domänenunabhängig übers Internet mit derselben Konfigurationsstruktur.
 Für maschinen-/nutzerspezifische Overrides ohne die zentrale Datei
 anzufassen: `appsettings.Local.json` daneben legen.
 
+Für private GitHub-Config-Repos kann ein PAT zusätzlich per
+`APPLICATIONMANAGER_GITHUB_TOKEN`-Umgebungsvariable oder in
+`appsettings.Local.json` als `GitHubToken` hinterlegt werden. Das ist die
+sichere Variante für private Repos; im öffentlichen Repo kann der normale
+`raw.githubusercontent.com`-Link weiter verwendet werden.
+
 Beispieldateien unter `examples/`:
 - `app-blacklist.example.json`
 - `app-wishlist.example.json`

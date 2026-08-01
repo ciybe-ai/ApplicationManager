@@ -7,6 +7,13 @@ namespace ApplicationManager.Core.Models;
 public class AppSettingsModel
 {
     /// <summary>
+    /// GitHub-Token für private Konfigurations- oder Release-Quellen.
+    /// Das Token darf nicht im Repository selbst liegen; besser in
+    /// appsettings.Local.json oder als Umgebungsvariable APPLICATIONMANAGER_GITHUB_TOKEN.
+    /// </summary>
+    public string? GitHubToken { get; set; }
+
+    /// <summary>
     /// Quelle der Blacklist (unerwünschte Apps). Http(s)-URL ODER lokaler/UNC-Pfad.
     /// Beispiel: "https://intranet.example.com/it/app-blacklist.json"
     /// Beispiel: "\\\\domain.local\\netlogon\\it\\app-blacklist.json"

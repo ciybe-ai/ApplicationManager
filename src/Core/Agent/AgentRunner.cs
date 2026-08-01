@@ -78,7 +78,7 @@ public static class AgentRunner
         // 2) Blacklist laden, ggf. Default-Profil bereinigen, unerwuenschte Apps entfernen
         if (!string.IsNullOrWhiteSpace(settings.BlacklistSource))
         {
-            var blacklist = await ConfigLoader.LoadBlacklistAsync(settings.BlacklistSource, http);
+            var blacklist = await ConfigLoader.LoadBlacklistAsync(settings.BlacklistSource, http, settings.GitHubToken);
 
             if (blacklist.Count == 0)
             {
@@ -114,7 +114,7 @@ public static class AgentRunner
         // 3) Gewuenschte Software installieren (winget, passender Scope)
         if (!string.IsNullOrWhiteSpace(settings.WishlistSource) && WingetInstaller.IsWingetAvailable())
         {
-            var wishlist = await ConfigLoader.LoadWishlistAsync(settings.WishlistSource, http);
+            var wishlist = await ConfigLoader.LoadWishlistAsync(settings.WishlistSource, http, settings.GitHubToken);
             var toInstall = wishlist
                 .Where(w => w.Scope == options.WingetScope)
                 .Where(w => !state.ProcessedInstalls.Contains(w.PackageId))
