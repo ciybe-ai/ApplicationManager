@@ -15,7 +15,6 @@
          Voraussetzung: .NET 8 Runtime muss auf dem Ziel-PC installiert sein -
          Install.ps1 kuemmert sich automatisch darum (winget), siehe scripts/Install.ps1. -->
     <InvariantGlobalization>true</InvariantGlobalization>
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <Version>1.0.0</Version>
   </PropertyGroup>
 
