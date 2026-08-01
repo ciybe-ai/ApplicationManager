@@ -22,7 +22,7 @@ public static class ConfigLoader
             settings = JsonSerializer.Deserialize<AppSettingsModel>(File.ReadAllText(mainPath), JsonOptions) ?? settings;
 
         if (string.IsNullOrWhiteSpace(settings.GitHubToken))
-            settings.GitHubToken = SecretStore.GetEffectiveToken(null, scope);
+            settings.GitHubToken = TokenResolver.Resolve(scope, null);
 
         // appsettings.Local.json erlaubt maschinenspezifische Überschreibungen,
         // ohne die zentral verteilte appsettings.json anfassen zu müssen.
@@ -38,7 +38,7 @@ public static class ConfigLoader
             }
         }
 
-        settings.GitHubToken = SecretStore.GetEffectiveToken(settings.GitHubToken, scope);
+        settings.GitHubToken = TokenResolver.Resolve(scope, settings.GitHubToken);
         return settings;
     }
 
