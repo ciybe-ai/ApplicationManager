@@ -49,14 +49,27 @@ Beide Programme:
 
 ## 2. Voraussetzungen zum Bauen
 
-- .NET 8 SDK (nur auf der Build-Maschine nötig – die Ziel-PCs brauchen
-  dank `--self-contained` kein .NET installiert)
+- .NET 8 SDK (nur auf der Build-Maschine nötig zum Bauen)
 
 ```powershell
 cd ApplicationManager
 dotnet restore
-dotnet publish src/SystemAgent -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
-dotnet publish src/UserAgent   -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+dotnet publish src/SystemAgent -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true
+dotnet publish src/UserAgent   -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true
+```
+
+**Wichtig:** Die Programme sind **framework-dependent** (nicht self-contained) –
+die EXEs sind dadurch nur wenige MB groß statt ~64 MB, brauchen aber auf dem
+**Ziel-PC** die .NET 8 Runtime (nicht SDK, reicht die kleinere Runtime, und
+zwar `Microsoft.DotNet.Runtime.8` – nicht die größere DesktopRuntime, da wir
+kein WinForms/WPF nutzen). `scripts/Install.ps1` prüft das automatisch und
+installiert die Runtime bei Bedarf per winget (Abschnitt 6.4). Bei
+GPO-Deployment (Abschnitt 4/5, ohne `Install.ps1`) müsst ihr das selbst
+sicherstellen, z. B. per zusätzlichem GPO-Computerstartskript:
+```powershell
+if (-not (dotnet --list-runtimes 2>$null | Select-String '^Microsoft\.NETCore\.App 8\.')) {
+    winget install --id Microsoft.DotNet.Runtime.8 -e --silent --accept-package-agreements --accept-source-agreements
+}
 ```
 
 Ergebnis jeweils unter `src/<Projekt>/bin/Release/net8.0-windows/win-x64/publish/`.
@@ -174,7 +187,7 @@ git init
 git add .
 git commit -m "Initial commit"
 git branch -M main
-git remote add origin https://github.com/ciybe-ai/ApplicationManager.git
+git remote add origin https://github.com/YOUR-ORG/ApplicationManager.git
 git push -u origin main
 ```
 
@@ -185,7 +198,7 @@ Update-Mechanismus verkompliziert; für ein internes IT-Tool ist ein
 öffentliches Repo meist unproblematisch, notfalls mit unauffälligem Namen.
 
 **Platzhalter ersetzen:** In `src/SystemAgent/appsettings.json`,
-`src/UserAgent/appsettings.json` und überall sonst `ciybe-ai` durch euren
+`src/UserAgent/appsettings.json` und überall sonst `YOUR-ORG` durch euren
 echten GitHub-Org-/User-Namen ersetzen, bevor ihr committet.
 
 ### 6.2 Blacklist/Wishlist pflegen (laufender Betrieb, unabhängig von Releases)
@@ -213,7 +226,8 @@ git push origin v1.0.0
 ```
 
 Die Pipeline (läuft auf `windows-latest`):
-1. Baut `SystemAgent` und `UserAgent` self-contained für win-x64
+1. Baut `SystemAgent` und `UserAgent` framework-dependent für win-x64 (klein,
+   braucht .NET 8 Runtime auf dem Ziel-PC)
 2. Berechnet SHA256 für beide EXEs
 3. Erzeugt `update-manifest.json` mit der Tag-Version und den SHA256-Werten
    (die URLs darin bleiben **fest** – sie zeigen auf `.../releases/latest/download/...`,
@@ -221,7 +235,7 @@ Die Pipeline (läuft auf `windows-latest`):
 4. Veröffentlicht ein GitHub Release mit allen Assets: beide EXEs, beide
    appsettings-Dateien, `update-manifest.json`, `Install.ps1`, `Uninstall.ps1`
 
-Ergebnis: `https://github.com/ciybe-ai/ApplicationManager/releases/latest`
+Ergebnis: `https://github.com/YOUR-ORG/ApplicationManager/releases/latest`
 enthält immer den aktuellen Stand, ohne dass Konfiguration/Links angepasst
 werden müssen.
 
@@ -230,11 +244,13 @@ werden müssen.
 Als Administrator in PowerShell:
 
 ```powershell
-irm https://github.com/ciybe-ai/ApplicationManager/releases/latest/download/Install.ps1 -OutFile Install.ps1
-.\Install.ps1 -Repo "ciybe-ai/ApplicationManager"
+irm https://github.com/YOUR-ORG/ApplicationManager/releases/latest/download/Install.ps1 -OutFile Install.ps1
+.\Install.ps1 -Repo "YOUR-ORG/ApplicationManager"
 ```
 
 Das Skript (`scripts/Install.ps1`):
+- prüft, ob die .NET 8 Runtime vorhanden ist, und installiert sie bei Bedarf
+  automatisch per winget (`Microsoft.DotNet.Runtime.8`)
 - lädt die aktuellsten EXEs + appsettings direkt von GitHub
 - kopiert SystemAgent nach `C:\Program Files\ApplicationManager\`
 - kopiert UserAgent nach `%LocalAppData%\ApplicationManager\` (für den
@@ -250,7 +266,7 @@ GPO-Computerstartskript, das denselben Ablauf für jeden PC automatisiert.
 
 Deinstallieren:
 ```powershell
-irm https://github.com/ciybe-ai/ApplicationManager/releases/latest/download/Uninstall.ps1 -OutFile Uninstall.ps1
+irm https://github.com/YOUR-ORG/ApplicationManager/releases/latest/download/Uninstall.ps1 -OutFile Uninstall.ps1
 .\Uninstall.ps1
 ```
 

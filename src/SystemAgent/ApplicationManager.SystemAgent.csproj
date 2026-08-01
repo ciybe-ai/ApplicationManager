@@ -7,9 +7,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>ApplicationManager.SystemAgent</RootNamespace>
     <AssemblyName>ApplicationManager.SystemAgent</AssemblyName>
-    <SelfContained>true</SelfContained>
+    <SelfContained>false</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
+    <!-- Framework-dependent statt self-contained: die EXE enthaelt nur noch
+         den eigenen Code, nicht die komplette .NET-Runtime (~64 MB -> wenige MB).
+         Voraussetzung: .NET 8 Runtime muss auf dem Ziel-PC installiert sein -
+         Install.ps1 kuemmert sich automatisch darum (winget), siehe scripts/Install.ps1. -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <Version>1.0.0</Version>
   </PropertyGroup>
 

@@ -42,6 +42,43 @@ function Download($url, $destination) {
 }
 
 # ---------------------------------------------------------------------------
+# 0) .NET 8 Runtime sicherstellen (framework-dependent EXEs brauchen sie)
+# ---------------------------------------------------------------------------
+function Test-DotNet8RuntimeInstalled {
+    try {
+        $runtimes = & dotnet --list-runtimes 2>$null
+        return ($runtimes -match '^Microsoft\.NETCore\.App 8\.')
+    } catch {
+        return $false
+    }
+}
+
+Write-Step "Pruefe .NET 8 Runtime"
+if (Test-DotNet8RuntimeInstalled) {
+    Write-Host "   Bereits installiert." -ForegroundColor DarkGray
+}
+else {
+    Write-Host "   Nicht gefunden - installiere per winget ..." -ForegroundColor Yellow
+
+    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+        throw "winget ist auf diesem PC nicht verfuegbar. Bitte .NET 8 Runtime manuell " +
+              "installieren (https://dotnet.microsoft.com/download/dotnet/8.0, 'Runtime' " +
+              "unter 'Run console apps', x64) und Install.ps1 danach erneut ausfuehren."
+    }
+
+    # Microsoft.DotNet.Runtime.8 = normale .NET-Runtime (ausreichend, da wir
+    # kein WinForms/WPF nutzen). NICHT DesktopRuntime.8 - waere groesser als noetig.
+    winget install --id Microsoft.DotNet.Runtime.8 -e --silent `
+        --accept-package-agreements --accept-source-agreements
+
+    if (-not (Test-DotNet8RuntimeInstalled)) {
+        throw ".NET 8 Runtime konnte nicht automatisch installiert werden. " +
+              "Bitte manuell installieren und Install.ps1 erneut ausfuehren."
+    }
+    Write-Host "   Installiert." -ForegroundColor Green
+}
+
+# ---------------------------------------------------------------------------
 # 1) SystemAgent installieren (Program Files + ProgramData)
 # ---------------------------------------------------------------------------
 Write-Step "Installiere SystemAgent nach $SystemInstallDir"
@@ -65,7 +102,8 @@ Download "$baseUrl/UserAgent.appsettings.json"       "$UserInstallDir\appsetting
 Write-Step "Richte geplante Aufgabe fuer SystemAgent ein"
 
 $sysTaskName = "ApplicationManager-SystemAgent"
-schtasks /Delete /TN $sysTaskName /F 2>$null | Out-Null
+Get-ScheduledTask -TaskName $sysTaskName -ErrorAction SilentlyContinue |
+    Unregister-ScheduledTask -Confirm:$false -ErrorAction SilentlyContinue
 
 $sysAction  = New-ScheduledTaskAction -Execute "$SystemInstallDir\ApplicationManager.SystemAgent.exe"
 $sysTrigger = New-ScheduledTaskTrigger -AtLogOn
@@ -84,7 +122,8 @@ Register-ScheduledTask -TaskName $sysTaskName -Action $sysAction -Trigger $sysTr
 Write-Step "Richte geplante Aufgabe fuer UserAgent ein"
 
 $userTaskName = "ApplicationManager-UserAgent"
-schtasks /Delete /TN $userTaskName /F 2>$null | Out-Null
+Get-ScheduledTask -TaskName $userTaskName -ErrorAction SilentlyContinue |
+    Unregister-ScheduledTask -Confirm:$false -ErrorAction SilentlyContinue
 
 $userAction  = New-ScheduledTaskAction -Execute "$UserInstallDir\ApplicationManager.UserAgent.exe"
 $userTrigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
