@@ -47,7 +47,8 @@ public static class AgentRunner
     public static async Task RunAsync(AgentOptions options)
     {
         var baseDir = AppContext.BaseDirectory;
-        var settings = ConfigLoader.LoadSettings(baseDir);
+        var scope = options.IsSystemAgent ? "system" : "user";
+        var settings = ConfigLoader.LoadSettings(baseDir, scope);
         var dataDir = string.IsNullOrWhiteSpace(settings.DataDirectory)
             ? options.DefaultDataDirectory
             : settings.DataDirectory;

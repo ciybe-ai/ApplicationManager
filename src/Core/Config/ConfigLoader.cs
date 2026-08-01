@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using ApplicationManager.Core.Models;
+using ApplicationManager.Core.Security;
 
 namespace ApplicationManager.Core.Config;
 
@@ -11,7 +12,7 @@ public static class ConfigLoader
         PropertyNameCaseInsensitive = true
     };
 
-    public static AppSettingsModel LoadSettings(string basePath)
+    public static AppSettingsModel LoadSettings(string basePath, string scope = "user")
     {
         var settings = new AppSettingsModel();
         var mainPath = Path.Combine(basePath, "appsettings.json");
@@ -21,7 +22,7 @@ public static class ConfigLoader
             settings = JsonSerializer.Deserialize<AppSettingsModel>(File.ReadAllText(mainPath), JsonOptions) ?? settings;
 
         if (string.IsNullOrWhiteSpace(settings.GitHubToken))
-            settings.GitHubToken = Environment.GetEnvironmentVariable("APPLICATIONMANAGER_GITHUB_TOKEN");
+            settings.GitHubToken = SecretStore.GetEffectiveToken(null, scope);
 
         // appsettings.Local.json erlaubt maschinenspezifische Überschreibungen,
         // ohne die zentral verteilte appsettings.json anfassen zu müssen.
@@ -37,9 +38,7 @@ public static class ConfigLoader
             }
         }
 
-        if (string.IsNullOrWhiteSpace(settings.GitHubToken))
-            settings.GitHubToken = Environment.GetEnvironmentVariable("APPLICATIONMANAGER_GITHUB_TOKEN");
-
+        settings.GitHubToken = SecretStore.GetEffectiveToken(settings.GitHubToken, scope);
         return settings;
     }
 
