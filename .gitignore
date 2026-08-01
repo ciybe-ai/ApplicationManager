@@ -1,0 +1,14 @@
+## .NET Build-Ausgaben
+bin/
+obj/
+publish/
+release/
+
+## IDE
+.vs/
+.vscode/
+*.user
+
+## Sonstiges
+*.log
+appsettings.Local.json

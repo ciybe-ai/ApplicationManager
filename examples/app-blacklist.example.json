@@ -1,0 +1,17 @@
+[
+  {
+    "appName": "Beispiel Toolbar",
+    "silentArgs": null,
+    "note": "Wird ungefragt vom Hersteller-Installer mitgebracht"
+  },
+  {
+    "appName": "Hersteller XYZ Assistant",
+    "silentArgs": "/S",
+    "note": "Autostart-Bloatware"
+  },
+  {
+    "appName": "Irgendein Werbeprogramm",
+    "silentArgs": "/SILENT",
+    "note": ""
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "version": "1.0.1",
+  "systemAgentUrl": "https://intranet.example.com/it/releases/ApplicationManager.SystemAgent.exe",
+  "systemAgentSha256": "PUT-SHA256-HASH-HERE",
+  "userAgentUrl": "https://intranet.example.com/it/releases/ApplicationManager.UserAgent.exe",
+  "userAgentSha256": "PUT-SHA256-HASH-HERE"
+}

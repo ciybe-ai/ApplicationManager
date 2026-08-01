@@ -1,0 +1,5 @@
+[
+  { "packageId": "7zip.7zip", "scope": "machine" },
+  { "packageId": "Notepad++.Notepad++", "scope": "machine" },
+  { "packageId": "Mozilla.Firefox", "scope": "machine" }
+]
